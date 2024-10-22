@@ -2,15 +2,15 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(to left, #94e1d4, #0e4675  );
+    background: linear-gradient(to left, #94e1d4, #0e4675);
 }
 
-.modal-body {
-    padding: 15px;
+.container.register {
+    max-width: 1200px;
+    padding: 20px;
 }
 
 .register {
-    padding: 3%;
     width: 100%;
     height: 100vh;
     display: flex;
@@ -21,127 +21,79 @@ body {
 .register-left {
     text-align: center;
     color: #fff;
-    margin-top: 2%;
-}
-
-.register-left input {
-    border: none;
-    border-radius: 1.5rem;
-    padding: 10px 20px;
-    width: 60%;
-    background: #f8f9fa;
-    font-weight: bold;
-    color: #0e4675;
-    margin-top: 20%;
-    margin-bottom: 3%;
-    cursor: pointer;
-}
-
-.register-right {
-    background: #f8f9fa;
-    border-top-left-radius: 10% 50%;
-    border-bottom-left-radius: 10% 50%;
+    background-color: #0e4675;
     padding: 30px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
 }
 
 .register-left img {
     margin-top: 15%;
     margin-bottom: 5%;
-    width: 25%;
+    width: 50%;
     animation: mover 1s infinite alternate;
 }
 
 @keyframes mover {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(-20px);
-    }
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-20px); }
 }
 
 .register-left p {
-    font-weight: lighter;
-    padding: 12%;
-    margin-top: -9%;
+    margin-top: 10px;
+    font-size: 16px;
 }
 
-.register .register-form {
-    padding: 20px;
-    margin-top: 10%;
-}
-
-.btnRegister {
-    display: block;
-    margin: 20px auto;
-    border: none;
-    border-radius: 1.5rem;
-    padding: 10px 20px;
-    background: #0062cc;
-    color: #fff;
-    font-weight: 600;
-    width: 60%;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btnRegister:hover {
-    background-color: #004bb5;
-}
-
-.register .nav-tabs {
-    margin-top: 3%;
-    border: none;
-    background: #0062cc;
-    border-radius: 1.5rem;
-    width: 28%;
-    float: right;
-}
-
-.register .nav-tabs .nav-link {
-    padding: 2%;
-    height: 34px;
-    font-weight: 600;
-    color: #fff;
-    border-top-right-radius: 1.5rem;
-    border-bottom-right-radius: 1.5rem;
-}
-
-.register .nav-tabs .nav-link:hover {
-    border: none;
-}
-
-.register .nav-tabs .nav-link.active {
-    width: 100px;
-    color: #0062cc;
-    border: 2px solid #0062cc;
-    border-top-left-radius: 1.5rem;
-    border-bottom-left-radius: 1.5rem;
+.register-right {
+    background: #f8f9fa;
+    padding: 40px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    width: 100%;
 }
 
 .register-heading {
     text-align: center;
-    margin-top: 0px;
-    margin-bottom: 0px; /* Ajusta el margen inferior */
-    font-size: 28px; /* Tamaño de fuente más grande */
+    margin-bottom: 20px;
+    font-size: 28px;
     font-weight: bold;
-    color: #495057;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px; /* Ajusta la altura para centrar verticalmente */
+    color: #0e4675;
 }
 
+.register-form {
+    padding: 20px 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.btnRegister {
+    display: block;
+    margin: 0 auto;
+    border: none;
+    border-radius: 1.5rem;
+    padding: 10px 20px;
+    background: #0e4675;
+    color: #fff;
+    font-weight: 600;
+    width: 60%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btnRegister:hover {
+    background-color: #08334c;
+}
 
 @media (max-width: 768px) {
-    .register-right {
+    .register-left, .register-right {
+        padding: 15px;
         border-radius: 0;
     }
 
     .register-heading {
-        margin-top: 30px;
-        margin-bottom: 10px;
-        font-size: 24px;
+        font-size: 22px;
     }
 
     .btnRegister {

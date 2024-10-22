@@ -1,23 +1,36 @@
 <?php
-require 'conexion.php';
+require 'vendor/autoload.php';
 
-header('Content-Type: application/json');
-$data = json_decode(file_get_contents('php://input'), true);
+$client = new MongoDB\Client("mongodb://localhost:27017");
+$collection = $client->Quantum->usuarios;
 
-if (!isset($data['username']) || !isset($data['password'])) {
-    echo json_encode(['success' => false, 'message' => 'Datos incompletos']);
-    exit();
-}
+$nombre = $_POST['nombre'];
+$apellido = $_POST['apellido'];
+$edad = (int)$_POST['edad'];
+$ci = $_POST['ci'];
+$profesion = $_POST['profesion'];
+$email = $_POST['email'];
+$fecha_nacimiento = $_POST['fecha_nacimiento'];
 
-$username = $data['username'];
-$password = password_hash($data['password'], PASSWORD_DEFAULT); // Asegúrate de usar hashing para las contraseñas
+if ($nombre && $apellido && $edad && $ci && $profesion && $email && $fecha_nacimiento) {
+    $nuevo_usuario = [
+        'nombre' => $nombre,
+        'apellido' => $apellido,
+        'edad' => $edad,
+        'ci' => $ci,
+        'profesion' => $profesion,
+        'email' => $email,
+        'fecha_nacimiento' => $fecha_nacimiento
+    ];
 
-$collection = $db->usuarios;
+    $insertOneResult = $collection->insertOne($nuevo_usuario);
 
-try {
-    $result = $collection->insertOne(['username' => $username, 'password' => $password]);
-    echo json_encode(['success' => true, 'message' => 'Usuario registrado']);
-} catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Error al registrar el usuario: ' . $e->getMessage()]);
+    if ($insertOneResult->getInsertedCount() == 1) {
+        echo "Registro exitoso. ID del nuevo usuario: " . $insertOneResult->getInsertedId();
+    } else {
+        echo "Error al registrar el usuario.";
+    }
+} else {
+    echo "Por favor, completa todos los campos.";
 }
 ?>
