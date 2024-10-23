@@ -3,26 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Registro</title>
     <?php include 'header.html'; ?>
 </head>
 <body>
-    <div id="login" class="container mt-5" style="display: none;">
-        <h2>Iniciar Sesión</h2>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="loginUsername">Nombre de Usuario</label>
-                <input type="text" class="form-control" id="loginUsername" required>
+    <div class="wrapper bg-white">
+        <div class="h2 text-center">Quantum Task</div>
+        <div class="h4 text-muted text-center pt-2">Iniciar Sesión</div>
+        <form class="pt-3">
+            <div class="form-group py-2">
+                <div class="input-field"> <span class="far fa-user p-2"></span> <input type="text" placeholder="Nombre o Email" required class=""> </div>
             </div>
-            <div class="form-group">
-                <label for="loginPassword">Contraseña</label>
-                <input type="password" class="form-control" id="loginPassword" required>
+            <div class="form-group py-1 pb-2">
+                <div class="input-field"> <span class="fas fa-lock p-2"></span> <input type="text" placeholder="Contraseña" required class=""> <button class="btn bg-white text-muted"> <span class="far fa-eye-slash"></span> </button> </div>
             </div>
-            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            <div class="d-flex align-items-start">
+                <div class="remember"> <label class="option text-muted"> Remember me <input type="radio" name="radio"> <span class="checkmark"></span> </label> </div>
+                <div class="ml-auto"> <a href="#" id="forgot">Forgot Password?</a> </div>
+            </div> <button class="btn btn-block text-center my-3">Log in</button>
+            <div class="text-center pt-3 text-muted">Not a member? <a href="registrar.php">Sign up</a></div>
         </form>
-        <p class="mt-3">¿No tienes una cuenta? <a href="#register">Registrarse</a></p>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
