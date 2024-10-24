@@ -31,11 +31,14 @@
                             <div class="form-group">
                                 <input type="email" class="form-control" name="email" placeholder="Email" required />
                             </div>
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="ci" placeholder="CI" required />
+                            <div class="mb-3">
+                                <input type="password" class="form-control" name="password" placeholder="Password" id="exampleInputPassword1" required />
                             </div>
                         </div>
                         <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="ci" placeholder="CI" required />
+                            </div>
                             <div class="form-group">
                                 <input type="number" name="edad" class="form-control" placeholder="Edad" required />
                             </div>

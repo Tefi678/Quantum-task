@@ -10,9 +10,13 @@ $edad = (int)$_POST['edad'];
 $ci = $_POST['ci'];
 $profesion = $_POST['profesion'];
 $email = $_POST['email'];
+$password = $_POST['password'];
 $fecha_nacimiento = $_POST['fecha_nacimiento'];
 
-if ($nombre && $apellido && $edad && $ci && $profesion && $email && $fecha_nacimiento) {
+$message = "";
+$alert_class = "";
+
+if ($nombre && $apellido && $edad && $ci && $profesion && $email && $password && $fecha_nacimiento) {
     $nuevo_usuario = [
         'nombre' => $nombre,
         'apellido' => $apellido,
@@ -20,17 +24,40 @@ if ($nombre && $apellido && $edad && $ci && $profesion && $email && $fecha_nacim
         'ci' => $ci,
         'profesion' => $profesion,
         'email' => $email,
+        'password' => $password,
         'fecha_nacimiento' => $fecha_nacimiento
     ];
 
     $insertOneResult = $collection->insertOne($nuevo_usuario);
 
     if ($insertOneResult->getInsertedCount() == 1) {
-        echo "Registro exitoso. ID del nuevo usuario: " . $insertOneResult->getInsertedId();
+        $message = "Registro exitoso. ID del nuevo usuario: " . $insertOneResult->getInsertedId();
+        $alert_class = "alert-success";
     } else {
-        echo "Error al registrar el usuario.";
+        $message = "Error al registrar el usuario.";
+        $alert_class = "alert-danger";
     }
 } else {
-    echo "Por favor, completa todos los campos.";
+    $message = "Por favor, completa todos los campos.";
+    $alert_class = "alert-warning";
 }
 ?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Registro</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <?php if ($message): ?>
+            <div class="alert <?= $alert_class ?>" role="alert">
+                <?= $message ?>
+            </div>
+        <?php endif; ?>
+        <a href="login.php" class="btn btn-primary mt-3">Volver al Inicio de Sesión</a>
+    </div>
+</body>
+</html>

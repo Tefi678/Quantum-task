@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style2.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Registro</title>
     <?php include 'header.html'; ?>
@@ -20,10 +20,10 @@
                 <div class="input-field"> <span class="fas fa-lock p-2"></span> <input type="text" placeholder="Contraseña" required class=""> <button class="btn bg-white text-muted"> <span class="far fa-eye-slash"></span> </button> </div>
             </div>
             <div class="d-flex align-items-start">
-                <div class="remember"> <label class="option text-muted"> Remember me <input type="radio" name="radio"> <span class="checkmark"></span> </label> </div>
-                <div class="ml-auto"> <a href="#" id="forgot">Forgot Password?</a> </div>
-            </div> <button class="btn btn-block text-center my-3">Log in</button>
-            <div class="text-center pt-3 text-muted">Not a member? <a href="registrar.php">Sign up</a></div>
+                <div class="remember"> <label class="option text-muted">Recordarme<input type="radio" name="radio"> <span class="checkmark"></span> </label> </div>
+                <div class="ml-auto"> <a href="#" id="forgot">¿Olvidaste tu contraseña?</a> </div>
+            </div> <button class="btn btn-block text-center my-3">Iniciar Sesión</button>
+            <div class="text-center pt-3 text-muted">¿No tienes cuenta? <a href="registrar.php">Registrate</a></div>
         </form>
     </div>
 
@@ -32,4 +32,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
 </body>
+<footer>
+    <?php include 'footer.html'; ?>
+</footer>
 </html>
