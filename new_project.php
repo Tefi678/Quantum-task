@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style4.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Registro</title>
     <?php include 'header.html'; ?>
@@ -17,25 +17,29 @@
                     <div class="row register-form">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="titulo" placeholder="Titulo" required />
+                                <input type="text" class="form-control" name="titulo" placeholder="Título" required />
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control" name="descripcion" placeholder="Descripcion" required />
+                                <input type="text" class="form-control" name="descripcion" placeholder="Descripción" required />
                             </div>
                             <div class="form-group">
-                                <input type="encargado" class="form-control" name="encargado" placeholder="Encargado" required />
+                                <label for="n_colaboradores">Número de Colaboradores:</label>
+                                <input type="number" class="form-control" name="n_colaboradores" id="n_colaboradores" placeholder="Número de colaboradores" min="1" required />
                             </div>
-                            <select class="form-control" name="profesion">
-                                    <option class="hidden" selected disabled>Etiqueta</option>
-                                    <option>Scrum</option>
-                                    <option>Hogar</option>
-                                    <option>Personal</option>
-                                    <option>Trabajo</option>
-                                    <option>Otro</option>
-                            </select>
+                            <div class="form-group">
+                                <label for="profesion">Etiqueta:</label>
+                                <select class="form-control" name="profesion" id="profesion" required>
+                                    <option value="" disabled selected>Seleccione una etiqueta</option>
+                                    <option value="Scrum">Scrum</option>
+                                    <option value="Hogar">Hogar</option>
+                                    <option value="Personal">Personal</option>
+                                    <option value="Trabajo">Trabajo</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <input type="submit" class="btnProject" value="Crear proyecto" />
+                    <input type="submit" class="btn btn-primary" value="Crear proyecto" />
                 </form>
             </div>
         </div>

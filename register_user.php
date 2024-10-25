@@ -4,6 +4,8 @@ require 'vendor/autoload.php';
 $client = new MongoDB\Client("mongodb://localhost:27017");
 $collection = $client->Quantum->usuarios;
 
+session_start();
+
 $nombre = $_POST['nombre'];
 $apellido = $_POST['apellido'];
 $edad = (int)$_POST['edad'];
@@ -24,15 +26,18 @@ if ($nombre && $apellido && $edad && $ci && $profesion && $email && $password &&
         'ci' => $ci,
         'profesion' => $profesion,
         'email' => $email,
-        'password' => $password,
+        'password' => password_hash($password, PASSWORD_BCRYPT), // Hashear contraseña
         'fecha_nacimiento' => $fecha_nacimiento
     ];
 
     $insertOneResult = $collection->insertOne($nuevo_usuario);
 
     if ($insertOneResult->getInsertedCount() == 1) {
-        $message = "Registro exitoso. ID del nuevo usuario: " . $insertOneResult->getInsertedId();
-        $alert_class = "alert-success";
+        $_SESSION['user_id'] = $insertOneResult->getInsertedId();
+        $_SESSION['user_email'] = $email;
+
+        header("Location: login.php");
+        exit();
     } else {
         $message = "Error al registrar el usuario.";
         $alert_class = "alert-danger";

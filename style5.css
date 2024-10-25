@@ -1,0 +1,17 @@
+body {
+    font-family: sans-serif;
+  }
+  
+  .available {
+    border-color: blue;
+  }
+  .delivered {
+    border-color: green;
+  }
+  
+  .item {
+    border: 5px solid black;
+    padding: 10px;
+    margin: 5px;
+  }
+  
