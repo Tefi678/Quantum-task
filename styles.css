@@ -1,0 +1,88 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('./images/paisaje.png ');
+    background-size: cover; /* Hace que la imagen cubra toda la pantalla */
+    background-position: center; /* Centra la imagen en la pantalla */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-attachment: fixed; /* La imagen permanece fija mientras se desplaza */
+}
+
+header {
+    background-color: #4a90e2;
+    color: white;
+    padding: 15px 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+.hero {
+    text-align: center;
+    padding: 50px 20px; /* Cambia esto por la URL de tu imagen */
+    background-size: cover;
+    color: white;
+}
+
+.hero h2 {
+    font-size: 32px;
+}
+
+.search-form {
+    margin-top: 20px;
+}
+
+.search-form input {
+    padding: 10px;
+    font-size: 16px;
+}
+
+.search-form button {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #e94e77;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.explore {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.explore a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    text-decoration: none;
+}
+
+footer {
+    text-align: center;
+    padding: 10px 0;
+    background-color: #333;
+    color: white;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
