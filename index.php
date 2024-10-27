@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Gestor de Proyectos</title>
-    <?php include 'header.html'; ?>
+    <?php include 'header.php'; ?>
 </head>
 <body>
     <main>

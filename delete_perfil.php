@@ -6,10 +6,8 @@ $collection = $client->nombre_base_datos->nombre_coleccion;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $usuarioId = $_POST['usuario_id'];
-
-    // Eliminar el usuario
     $collection->deleteOne(['_id' => new MongoDB\BSON\ObjectId($usuarioId)]);
 
-    header('Location: index.php'); // Redirigir a la página principal
+    header('Location: index.php');
 }
 ?>

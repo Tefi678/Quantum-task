@@ -2,166 +2,113 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background: #f9d4db;
+    background: linear-gradient(to top, #0e4675, #f9545b);
 }
 
-.wrapper {
-    max-width: 500px;
-    border-radius: 10px;
-    margin: 50px auto;
-    padding: 30px 40px;
-    box-shadow: 20px 20px 80px #0e4675;
+.container {
+    max-width: 1200px;
+    padding: 20px;
+    margin: auto;
 }
 
-.h2 {
-    font-family: 'Kaushan Script', cursive;
-    font-size: 3.5rem;
-    font-weight: bold;
-    color: #0e4675;
-    font-style: italic
-}
-
-.h4 {
-    font-family: 'Poppins', sans-serif
-}
-
-.input-field {
-    border-radius: 5px;
-    padding: 5px;
+.register {
+    width: 100%;
+    height: 100vh;
     display: flex;
     align-items: center;
-    cursor: pointer;
-    border: 1px solid #400485;
-    color: #400485
+    justify-content: center;
 }
 
-.input-field:hover {
-    color: #7b4ca0;
-    border: 1px solid #7b4ca0
+.register-left {
+    text-align: center;
+    color: #fff;
+    background-color: #0e4675;
+    padding: 30px;
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+    flex: 1; /* Para que ocupe la mitad del contenedor */
 }
 
-input {
-    border: none;
-    outline: none;
-    box-shadow: none;
+.register-left img {
+    margin-top: 15%;
+    margin-bottom: 5%;
+    width: 50%;
+    animation: mover 1s infinite alternate;
+}
+
+@keyframes mover {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-20px); }
+}
+
+.register-left p {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.register-right {
+    background: #f8f9fa;
+    padding: 40px;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
     width: 100%;
-    padding: 0px 2px;
-    font-family: 'Poppins', sans-serif
+    flex: 1; /* Para que ocupe la otra mitad del contenedor */
 }
 
-.fa-eye-slash.btn {
+.register-heading {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #0e4675;
+}
+
+.register-form {
+    padding: 20px 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.btnRegister {
+    display: block;
+    margin: 0 auto;
     border: none;
-    outline: none;
-    box-shadow: none
+    border-radius: 1.5rem;
+    padding: 10px 20px;
+    background: #0e4675;
+    color: #fff;
+    font-weight: 600;
+    width: 60%;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-a {
-    text-decoration: none;
-    color: #400485;
-    font-weight: 700
+.btnRegister:hover {
+    background-color: #08334c;
 }
 
-a:hover {
-    text-decoration: none;
-    color: #7b4ca0
+.alert {
+    margin-bottom: 20px;
 }
 
-.option {
-    position: relative;
-    padding-left: 30px;
-    cursor: pointer
+.text-center {
+    text-align: center;
 }
 
-.option label.text-muted {
-    display: block;
-    cursor: pointer
-}
-
-.option input {
-    display: none
-}
-
-.checkmark {
-    position: absolute;
-    top: 3px;
-    left: 0;
-    height: 20px;
-    width: 20px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    cursor: pointer
-}
-
-.option input:checked~.checkmark:after {
-    display: block
-}
-
-.option .checkmark:after {
-    content: "";
-    width: 13px;
-    height: 13px;
-    display: block;
-    background: #400485;
-    position: absolute;
-    top: 48%;
-    left: 53%;
-    border-radius: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    transition: 300ms ease-in-out 0s
-}
-
-.option input[type="radio"]:checked~.checkmark {
-    background: #fff;
-    transition: 300ms ease-in-out 0s;
-    border: 1px solid #400485
-}
-
-.option input[type="radio"]:checked~.checkmark:after {
-    transform: translate(-50%, -50%) scale(1)
-}
-
-.btn.btn-block {
-    border-radius: 20px;
-    background-color: #400485;
-    color: #fff
-}
-
-.btn.btn-block:hover {
-    background-color: #55268be0
-}
-
-@media(max-width: 575px) {
-    .wrapper {
-        margin: 10px
-    }
-}
-
-@media(max-width:424px) {
-    .wrapper {
-        padding: 30px 10px;
-        margin: 5px
+@media (max-width: 768px) {
+    .register-left, .register-right {
+        padding: 15px;
+        border-radius: 0;
+        flex: 100%; /* En pantallas más pequeñas, ocupa todo el ancho */
     }
 
-    .option {
-        position: relative;
-        padding-left: 22px
+    .register-heading {
+        font-size: 22px;
     }
 
-    .option label.text-muted {
-        font-size: 0.95rem
-    }
-
-    .checkmark {
-        position: absolute;
-        top: 2px
-    }
-
-    .option .checkmark:after {
-        top: 50%
-    }
-
-    #forgot {
-        font-size: 0.95rem
+    .btnRegister {
+        width: 100%;
     }
 }

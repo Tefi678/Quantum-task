@@ -6,19 +6,73 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Registro</title>
-    <?php include 'header.html'; ?>
+    <?php include 'header.php'; ?>
 </head>
 <body>
     <div class="container register">
         <div class="row">
             <div class="col-md-3 register-left">
                 <img src="./images/atom.png" alt="Logo" />
-                <h3>¡Registrate!</h3>
+                <h3>¡Regístrate!</h3>
                 <p>Registra tu usuario para comenzar a usar Quantum Task. Si ya tienes cuenta, inicia sesión.</p>
                 <a href="login.php" class="btn btn-light">Iniciar sesión</a><br />
             </div>
             <div class="col-md-9 register-right">
-                <form action="register_user.php" method="POST">
+                <?php
+                require 'vendor/autoload.php';
+                session_start();
+
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    $client = new MongoDB\Client("mongodb://localhost:27017");
+                    $collection = $client->Quantum->usuarios;
+
+                    $nombre = $_POST['nombre'];
+                    $apellido = $_POST['apellido'];
+                    $edad = (int)$_POST['edad'];
+                    $ci = $_POST['ci'];
+                    $profesion = $_POST['profesion'];
+                    $email = $_POST['email'];
+                    $password = $_POST['password'];
+                    $fecha_nacimiento = $_POST['fecha_nacimiento'];
+
+                    $message = "";
+                    $alert_class = "";
+
+                    if ($nombre && $apellido && $edad && $ci && $profesion && $email && $password && $fecha_nacimiento) {
+                        $nuevo_usuario = [
+                            'nombre' => $nombre,
+                            'apellido' => $apellido,
+                            'edad' => $edad,
+                            'ci' => $ci,
+                            'profesion' => $profesion,
+                            'email' => $email,
+                            'password' => password_hash($password, PASSWORD_BCRYPT), // Hashear contraseña
+                            'fecha_nacimiento' => $fecha_nacimiento
+                        ];
+
+                        // Insertar en la colección
+                        $insertOneResult = $collection->insertOne($nuevo_usuario);
+
+                        if ($insertOneResult->getInsertedCount() == 1) {
+                            // Iniciar sesión
+                            $_SESSION['user_id'] = $insertOneResult->getInsertedId();
+                            $_SESSION['user_email'] = $email;
+
+                            // Redirigir a la página principal o dashboard
+                            header("Location: index.php"); // Cambia esto a la página que quieras redirigir
+                            exit();
+                        } else {
+                            $message = "Error al registrar el usuario.";
+                            $alert_class = "alert-danger";
+                        }
+                    } else {
+                        $message = "Por favor, completa todos los campos.";
+                        $alert_class = "alert-warning";
+                    }
+                }
+                ?>
+
+                <form action="registrar.php" method="POST">
                     <h3 class="register-heading">Registrar nuevo usuario</h3>
                     <div class="row register-form">
                         <div class="col-md-6">
@@ -62,11 +116,16 @@
                     </div>
                     <input type="submit" class="btnRegister" value="Registrar" />
                 </form>
+
+                <?php if (isset($message)): ?>
+                    <div class="alert <?= $alert_class ?>" role="alert">
+                        <?= $message ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

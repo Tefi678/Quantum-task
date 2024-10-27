@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style5.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Notificaciones</title>
-    <?php include 'header.html'; ?>
+    <?php include 'header.php'; ?>
 </head>
 <body>
     <div>
