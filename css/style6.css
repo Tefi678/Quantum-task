@@ -1,0 +1,116 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+    text-align: center;
+    margin-top: 0;
+}
+.task-box {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.tab {
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+}
+.tab.active {
+    background-color: #28a745;
+    color: white;
+}
+.task-form label {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    font-weight: bold; /* Negrita */
+}
+.task-form input, .task-form select, .task-form textarea {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.task-list table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.task-list table, .task-list th, .task-list td {
+    border: 1px solid #ddd;
+}
+.task-list th, .task-list td {
+    padding: 10px;
+    text-align: left;
+    max-width: 150px; /* Limitar el ancho de las celdas */
+    overflow: hidden; /* Ocultar el desbordamiento */
+    text-overflow: ellipsis; /* Mostrar "..." para indicar que hay más texto */
+    white-space: nowrap; /* Evitar el salto de línea */
+}
+.task-list th {
+    background-color: #f4f4f4;
+}
+.task-list td {
+    white-space: normal;
+    position: relative;
+}
+.task-list td .tooltip {
+    visibility: hidden;
+    width: 200px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Colocar arriba de la celda */
+    left: 50%;
+    margin-left: -100px; /* Centrar el tooltip */
+    opacity: 0; /* Ocultar el tooltip */
+    transition: opacity 0.3s; /* Transición suave */
+}
+.task-list td:hover .tooltip {
+    visibility: visible; /* Mostrar el tooltip al pasar el mouse */
+    opacity: 1; /* Hacer visible el tooltip */
+}
+.buttons {
+    text-align: right;
+    margin-top: 20px;
+}
+.buttons button {
+    padding: 10px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.add-task {
+    background-color: #28a745;
+    color: white;
+}
+.delete-task {
+    background-color: #dc3545;
+    color: white;
+}
+.modify-task {
+    background-color: #ffc107;
+    color: white;
+}
+.hidden {
+    display: none;
+}
