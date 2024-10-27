@@ -52,7 +52,7 @@
     </div>
     <section class="hero">
         <div class="hero-content">
-            <h1>¡Bienvenido a Quantum Tas!</h1>
+            <h1>¡Bienvenido a Quantum Task!</h1>
             <p>Explora, descubre y vive una experiencia única con nosotros.</p>
             <a href="#about" class="btn-primary">Conócenos</a>
         </div>
@@ -88,7 +88,7 @@
     </section>
     <section class="call-to-action">
         <h2>¿Listo para Empezar?</h2>
-        <p>Contacta con nosotros para obtener más información sobre nuestros servicios.</p>
+        <p>Registrate y empieza a trabajar con nosotros</p>
         <a href="registrar.php" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Inicia en Quantum Task</a>
     </section>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

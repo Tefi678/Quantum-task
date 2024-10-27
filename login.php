@@ -1,33 +1,27 @@
 <?php
-session_start(); // Inicia la sesión
+session_start();
 
-// Variables para almacenar mensajes de error
 $error = '';
 
-// Verificar si el formulario ha sido enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Obtener las credenciales ingresadas
-    $usernameOrEmail = $_POST['username']; // Puede ser nombre de usuario o email
+    $usernameOrEmail = $_POST['username'];
     $password = $_POST['password'];
 
-    // Conectar a MongoDB
-    require 'vendor/autoload.php'; // Asegúrate de que este archivo existe y la biblioteca esté instalada
+    require 'vendor/autoload.php';
     $client = new MongoDB\Client("mongodb://localhost:27017");
     $collection = $client->Quantum->usuarios;
 
-    // Buscar el usuario en la base de datos
     $user = $collection->findOne(['$or' => [
         ['nombre' => $usernameOrEmail],
         ['email' => $usernameOrEmail]
     ]]);
 
     if ($user) {
-        // Verificar la contraseña
         if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = (string)$user['_id']; // Almacenar el ID del usuario en la sesión
-            $_SESSION['username'] = $user['nombre']; // Almacenar el nombre de usuario en la sesión
+            $_SESSION['user_id'] = (string)$user['_id'];
+            $_SESSION['username'] = $user['nombre'];
 
-            header("Location: index.php"); // Redirigir a la página principal
+            header("Location: index.php");
             exit();
         } else {
             $error = 'Contraseña incorrecta.';
@@ -41,34 +35,68 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style2.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Iniciar Sesión</title>
     <?php include 'header.php'; ?>
 </head>
 <body>
-    <div class="container">
-        <h2>Iniciar Sesión</h2>
-        <?php if ($error): ?>
-            <div class="alert alert-danger" role="alert">
-                <?php echo htmlspecialchars($error); ?>
+    <section class="h-100 gradient-form">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-xl-10">
+                    <div class="card rounded-3 text-black">
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <div class="card-body p-md-5 mx-md-4">
+                                    <div class="text-center">
+                                        <img src="images/logo.png" style="width: 185px;" alt="logo">
+                                        <h4 class="mt-1 mb-5 pb-1">Quantum Task</h4>
+                                    </div>
+                                    <?php if ($error): ?>
+                                        <div class="alert alert-danger" role="alert">
+                                            <?php echo htmlspecialchars($error); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <form method="POST" action="login.php">
+                                        <p>Ingresa tu nombre o email</p>
+                                        <div class="form-group" data-mdb-input-init class="form-outline mb-4">
+                                            <input type="text" class="form-control" id="username" name="username" required>
+                                        </div>
+                                        <div class="form-group" data-mdb-input-init class="form-outline mb-4">
+                                            <label for="password">Contraseña:</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
+                                        <div class="text-center pt-1 mb-5 pb-1">
+                                            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                                            <p class="mb-0 me-2"></p>
+                                            <a class="text-muted" href="#!">¿Olvidaste tu contraseña?</a>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-center pb-4">
+                                            <p class="mb-0 me-2">¿No tienes cuenta?</p>
+                                            <a class="btn btn-outline-info" href="registrar.php" role="button">Registrarse</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+                                <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                                    <h4 class="mb-4">Bienvenido de vuelta!</h4>
+                                    <p class="small mb-0">Estamos contentos de verte otra vez, esperamos que disfrutes la experiencia</p>
+                                    <p class="small mb-0">Puedes cambiar los datos de tu perfil en perfil, si necesitas tambien puedes revisar el historiad de tu proyecto</p>
+                                    <p class="small mb-0">Quantum Task esta interesado en tu seguimiento de progreso, si tienes dudas ve a ayuda</p>
+                                    <a class="btn btn-outline-info" href="help.php" role="button">Ayuda</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        <?php endif; ?>
-        <form method="POST" action="login.php">
-            <div class="form-group">
-                <label for="username">Nombre de Usuario o Email:</label>
-                <input type="text" class="form-control" id="username" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Contraseña:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-        </form>
-    </div>
-    <script src="path/to/your/bootstrap.bundle.min.js"></script> <!-- Asegúrate de tener Bootstrap -->
+        </div>
+    </section>
+    <script src="path/to/your/bootstrap.bundle.min.js"></script>
 </body>
 <footer>
     <?php include 'footer.html'; ?>

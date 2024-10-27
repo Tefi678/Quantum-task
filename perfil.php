@@ -1,7 +1,32 @@
+<?php
+session_start();
+require 'vendor/autoload.php';
+
+$client = new MongoDB\Client("mongodb://localhost:27017");
+$collectionUsuarios = $client->Quantum->usuarios; // Colección de usuarios
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php"); // Redirigir al login si no está autenticado
+    exit();
+}
+
+$userId = $_SESSION['user_id'];
+$userObjectId = new MongoDB\BSON\ObjectId($userId);
+
+// Obtener datos del usuario logueado
+$usuario = $collectionUsuarios->findOne(['_id' => $userObjectId]);
+
+// Verificar si se encontró el usuario
+if (!$usuario) {
+    echo "Usuario no encontrado.";
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -10,240 +35,181 @@
 </head>
 <body>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-<div class="container">
-   <div class="row">
-      <div class="col-md-12">
-         <div id="content" class="content content-full-width">
-            <!-- begin profile -->
-            <div class="profile">
-               <div class="profile-header">
-                  <!-- BEGIN profile-header-cover -->
-                  <div class="profile-header-cover"></div>
-                  <!-- END profile-header-cover -->
-                  <!-- BEGIN profile-header-content -->
-                  <div class="profile-header-content">
-                     <!-- BEGIN profile-header-img -->
-                     <div class="profile-header-img">
-                        <img src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="">
-                     </div>
-                     <!-- END profile-header-img -->
-                     <!-- BEGIN profile-header-info -->
-                     <div class="profile-header-info">
-                        <h4 class="m-t-10 m-b-5">Sean Ngu</h4>
-                        <p class="m-b-10">UXUI + Frontend Developer</p>
-                        <a href="#" class="btn btn-sm btn-info mb-2">Edit Profile</a>
-                     </div>
-                     <!-- END profile-header-info -->
-                  </div>
-                  <!-- END profile-header-content -->
-                  <!-- BEGIN profile-header-tab -->
-                  <ul class="profile-header-tab nav nav-tabs">
-                     <li class="nav-item"><a href="https://www.bootdey.com/snippets/view/bs4-profile-with-timeline-posts" target="__blank" class="nav-link_">POSTS</a></li>
-                     <li class="nav-item"><a href="https://www.bootdey.com/snippets/view/bs4-profile-about" target="__blank" class="nav-link_">ABOUT</a></li>
-                     <li class="nav-item"><a href="https://www.bootdey.com/snippets/view/profile-photos" target="__blank" class="nav-link_">PHOTOS</a></li>
-                     <li class="nav-item"><a href="https://www.bootdey.com/snippets/view/profile-videos" target="__blank" class="nav-link_">VIDEOS</a></li>
-                     <li class="nav-item"><a href="https://www.bootdey.com/snippets/view/bs4-profile-friend-list" target="__blank" class="nav-link_ active show">FRIENDS</a></li>
-                  </ul>
-                  <!-- END profile-header-tab -->
-               </div>
+    <div class="container">
+        <div class="row flex-lg-nowrap">
+            <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
+                <div class="card p-3">
+                    <div class="e-navlist e-navlist--active-bg">
+                        <ul class="nav">
+                            <li class="nav-item"><a class="nav-link px-2 active" href="#"><i class="fa fa-fw fa-bar-chart mr-1"></i><span>Overview</span></a></li>
+                            <li class="nav-item"><a class="nav-link px-2" href="https://www.bootdey.com/snippets/view/bs4-crud-users" target="__blank"><i class="fa fa-fw fa-th mr-1"></i><span>CRUD</span></a></li>
+                            <li class="nav-item"><a class="nav-link px-2" href="https://www.bootdey.com/snippets/view/bs4-edit-profile-page" target="__blank"><i class="fa fa-fw fa-cog mr-1"></i><span>Settings</span></a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <!-- end profile -->
-            <!-- begin profile-content -->
-            <div class="profile-content">
-               <!-- begin tab-content -->
-               <div class="tab-content p-0">
-                  <!-- begin #profile-post tab -->
-                  <div class="tab-pane fade active show" id="profile-post">
-                     <!-- begin timeline -->
-                     <ul class="timeline">
-                        <li>
-                           <!-- begin timeline-time -->
-                           <div class="timeline-time">
-                              <span class="date">today</span>
-                              <span class="time">04:20</span>
-                           </div>
-                           <!-- end timeline-time -->
-                           <!-- begin timeline-icon -->
-                           <div class="timeline-icon">
-                              <a href="javascript:;">&nbsp;</a>
-                           </div>
-                           <!-- end timeline-icon -->
-                           <!-- begin timeline-body -->
-                           <div class="timeline-body">
-                              <div class="timeline-header">
-                                 <span class="userimage"><img src="https://bootdey.com/img/Content/avatar/avatar3.png" alt=""></span>
-                                 <span class="username"><a href="javascript:;">Sean Ngu</a> <small></small></span>
-                                 <span class="pull-right text-muted">18 Views</span>
-                              </div>
-                              <div class="timeline-content">
-                                 <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc faucibus turpis quis tincidunt luctus.
-                                    Nam sagittis dui in nunc consequat, in imperdiet nunc sagittis.
-                                 </p>
-                              </div>
-                              <div class="timeline-likes">
-                                 <div class="stats-right">
-                                    <span class="stats-text">259 Shares</span>
-                                    <span class="stats-text">21 Comments</span>
-                                 </div>
-                                 <div class="stats">
-                                    <span class="fa-stack fa-fw stats-icon">
-                                    <i class="fa fa-circle fa-stack-2x text-danger"></i>
-                                    <i class="fa fa-heart fa-stack-1x fa-inverse t-plus-1"></i>
-                                    </span>
-                                    <span class="fa-stack fa-fw stats-icon">
-                                    <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                                    <i class="fa fa-thumbs-up fa-stack-1x fa-inverse"></i>
-                                    </span>
-                                    <span class="stats-total">4.3k</span>
-                                 </div>
-                              </div>
-                              <div class="timeline-footer">
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-thumbs-up fa-fw fa-lg m-r-3"></i> Like</a>
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-comments fa-fw fa-lg m-r-3"></i> Comment</a> 
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-share fa-fw fa-lg m-r-3"></i> Share</a>
-                              </div>
-                              <div class="timeline-comment-box">
-                                 <div class="user"><img src="https://bootdey.com/img/Content/avatar/avatar3.png"></div>
-                                 <div class="input">
-                                    <form action="">
-                                       <div class="input-group">
-                                          <input type="text" class="form-control rounded-corner" placeholder="Write a comment...">
-                                          <span class="input-group-btn p-l-10">
-                                          <button class="btn btn-primary f-s-12 rounded-corner" type="button">Comment</button>
-                                          </span>
-                                       </div>
-                                    </form>
-                                 </div>
-                              </div>
-                           </div>
-                           <!-- end timeline-body -->
-                        </li>
-                        <li>
-                           <!-- begin timeline-time -->
-                           <div class="timeline-time">
-                              <span class="date">yesterday</span>
-                              <span class="time">20:17</span>
-                           </div>
-                           <!-- end timeline-time -->
-                           <!-- begin timeline-icon -->
-                           <div class="timeline-icon">
-                              <a href="javascript:;">&nbsp;</a>
-                           </div>
-                           <!-- end timeline-icon -->
-                           <!-- begin timeline-body -->
-                           <div class="timeline-body">
-                              <div class="timeline-header">
-                                 <span class="userimage"><img src="https://bootdey.com/img/Content/avatar/avatar3.png" alt=""></span>
-                                 <span class="username">Sean Ngu</span>
-                                 <span class="pull-right text-muted">82 Views</span>
-                              </div>
-                              <div class="timeline-content">
-                                 <p>Location: United States</p>
-                              </div>
-                              <div class="timeline-footer">
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-thumbs-up fa-fw fa-lg m-r-3"></i> Like</a>
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-comments fa-fw fa-lg m-r-3"></i> Comment</a> 
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-share fa-fw fa-lg m-r-3"></i> Share</a>
-                              </div>
-                           </div>
-                           <!-- end timeline-body -->
-                        </li>
-                        <li>
-                           <!-- begin timeline-time -->
-                           <div class="timeline-time">
-                              <span class="date">24 February 2014</span>
-                              <span class="time">08:17</span>
-                           </div>
-                           <!-- end timeline-time -->
-                           <!-- begin timeline-icon -->
-                           <div class="timeline-icon">
-                              <a href="javascript:;">&nbsp;</a>
-                           </div>
-                           <!-- end timeline-icon -->
-                           <!-- begin timeline-body -->
-                           <div class="timeline-body">
-                              <div class="timeline-header">
-                                 <span class="userimage"><img src="https://bootdey.com/img/Content/avatar/avatar3.png" alt=""></span>
-                                 <span class="username">Sean Ngu</span>
-                                 <span class="pull-right text-muted">1,282 Views</span>
-                              </div>
-                              <div class="timeline-content">
-                                 <p class="lead">
-                                    <i class="fa fa-quote-left fa-fw pull-left"></i>
-                                    Quisque sed varius nisl. Nulla facilisi. Phasellus consequat sapien sit amet nibh molestie placerat. Donec nulla quam, ullamcorper ut velit vitae, lobortis condimentum magna. Suspendisse mollis in sem vel mollis.
-                                    <i class="fa fa-quote-right fa-fw pull-right"></i>
-                                 </p>
-                              </div>
-                              <div class="timeline-footer">
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-thumbs-up fa-fw fa-lg m-r-3"></i> Like</a>
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-comments fa-fw fa-lg m-r-3"></i> Comment</a> 
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-share fa-fw fa-lg m-r-3"></i> Share</a>
-                              </div>
-                           </div>
-                           <!-- end timeline-body -->
-                        </li>
-                        <li>
-                           <!-- begin timeline-time -->
-                           <div class="timeline-time">
-                              <span class="date">10 January 2014</span>
-                              <span class="time">20:43</span>
-                           </div>
-                           <!-- end timeline-time -->
-                           <!-- begin timeline-icon -->
-                           <div class="timeline-icon">
-                              <a href="javascript:;">&nbsp;</a>
-                           </div>
-                           <!-- end timeline-icon -->
-                           <!-- begin timeline-body -->
-                           <div class="timeline-body">
-                              <div class="timeline-header">
-                                 <span class="userimage"><img src="https://bootdey.com/img/Content/avatar/avatar3.png" alt=""></span>
-                                 <span class="username">Sean Ngu</span>
-                                 <span class="pull-right text-muted">1,021,282 Views</span>
-                              </div>
-                              <div class="timeline-content">
-                                 <h4 class="template-title">
-                                    <i class="fa fa-map-marker text-danger fa-fw"></i>
-                                    795 Folsom Ave, Suite 600 San Francisco, CA 94107
-                                 </h4>
-                                 <p>In hac habitasse platea dictumst. Pellentesque bibendum id sem nec faucibus. Maecenas molestie, augue vel accumsan rutrum, massa mi rutrum odio, id luctus mauris nibh ut leo.</p>
-                                 <p class="m-t-20">
-                                    <img src="../assets/img/gallery/gallery-5.jpg" alt="">
-                                 </p>
-                              </div>
-                              <div class="timeline-footer">
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-thumbs-up fa-fw fa-lg m-r-3"></i> Like</a>
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-comments fa-fw fa-lg m-r-3"></i> Comment</a> 
-                                 <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-share fa-fw fa-lg m-r-3"></i> Share</a>
-                              </div>
-                           </div>
-                           <!-- end timeline-body -->
-                        </li>
-                        <li>
-                           <!-- begin timeline-icon -->
-                           <div class="timeline-icon">
-                              <a href="javascript:;">&nbsp;</a>
-                           </div>
-                           <!-- end timeline-icon -->
-                           <!-- begin timeline-body -->
-                           <div class="timeline-body">
-                              Loading...
-                           </div>
-                           <!-- begin timeline-body -->
-                        </li>
-                     </ul>
-                     <!-- end timeline -->
-                  </div>
-                  <!-- end #profile-post tab -->
-               </div>
-               <!-- end tab-content -->
+
+            <div class="col">
+                <div class="row">
+                    <div class="col mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="e-profile">
+                                    <div class="row">
+                                        <div class="col-12 col-sm-auto mb-3">
+                                            <div class="mx-auto" style="width: 140px;">
+                                                <div class="d-flex justify-content-center align-items-center rounded" style="height: 140px; background-color: rgb(233, 236, 239);">
+                                                    <span style="color: rgb(166, 168, 170); font: bold 8pt Arial;">140x140</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+                                            <div class="text-center text-sm-left mb-2 mb-sm-0">
+                                                <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap"><?= htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido']) ?></h4>
+                                                <p class="mb-0">@<?= htmlspecialchars($usuario['ci']) ?></p>
+                                                <div class="text-muted"><small>Último acceso: hace 2 horas</small></div>
+                                                <div class="mt-2">
+                                                    <button class="btn btn-primary" type="button">
+                                                        <i class="fa fa-fw fa-camera"></i>
+                                                        <span>Cambiar Foto</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="text-center text-sm-right">
+                                                <span class="badge badge-secondary"><?= htmlspecialchars($usuario['profesion']) ?></span>
+                                                <div class="text-muted"><small>Se unió el <?= date('d M Y', strtotime($usuario['fecha_nacimiento'])) ?></small></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ul class="nav nav-tabs">
+                                        <li class="nav-item"><a href="" class="active nav-link">Configuración</a></li>
+                                    </ul>
+                                    <div class="tab-content pt-3">
+                                        <div class="tab-pane active">
+                                            <form class="form" novalidate="">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <div class="form-group">
+                                                                    <label>Nombre Completo</label>
+                                                                    <input class="form-control" type="text" name="name" placeholder="John Smith" value="<?= htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido']) ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col">
+                                                                <div class="form-group">
+                                                                    <label>Edad</label>
+                                                                    <input class="form-control" type="number" name="edad" placeholder="Edad" value="<?= htmlspecialchars($usuario['edad']) ?>">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <div class="form-group">
+                                                                    <label>Email</label>
+                                                                    <input class="form-control" type="text" name="email" placeholder="user@example.com" value="<?= htmlspecialchars($usuario['email']) ?>">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col mb-3">
+                                                                <div class="form-group">
+                                                                    <label>Acerca de</label>
+                                                                    <textarea class="form-control" rows="5" placeholder="Mi biografía"></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12 col-sm-6 mb-3">
+                                                        <div class="mb-2"><b>Cambiar Contraseña</b></div>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <div class="form-group">
+                                                                    <label>Contraseña Actual</label>
+                                                                    <input class="form-control" type="password" placeholder="••••••">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <div class="form-group">
+                                                                    <label>Nueva Contraseña</label>
+                                                                    <input class="form-control" type="password" placeholder="••••••">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <div class="form-group">
+                                                                    <label>Confirmar <span class="d-none d-xl-inline">Contraseña</span></label>
+                                                                    <input class="form-control" type="password" placeholder="••••••">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-sm-5 offset-sm-1 mb-3">
+                                                        <div class="mb-2"><b>Mantenerse en contacto</b></div>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <label>Notificaciones por Email</label>
+                                                                <div class="custom-controls-stacked px-2">
+                                                                    <div class="custom-control custom-checkbox">
+                                                                        <input type="checkbox" class="custom-control-input" id="notifications-blog" checked="">
+                                                                        <label class="custom-control-label" for="notifications-blog">Publicaciones del blog</label>
+                                                                    </div>
+                                                                    <div class="custom-control custom-checkbox">
+                                                                        <input type="checkbox" class="custom-control-input" id="notifications-news" checked="">
+                                                                        <label class="custom-control-label" for="notifications-news">Boletín informativo</label>
+                                                                    </div>
+                                                                    <div class="custom-control custom-checkbox">
+                                                                        <input type="checkbox" class="custom-control-input" id="notifications-offers" checked="">
+                                                                        <label class="custom-control-label" for="notifications-offers">Ofertas personales</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col d-flex justify-content-end">
+                                                        <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-3 mb-3">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="px-xl-3">
+                                <a href="cerrar_sesion.php" class="btn btn-block btn-secondary">
+                                   <i class="fa fa-sign-out"></i>
+                                   <span>Cerrar Sesión</span>
+                                </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title font-weight-bold">Soporte</h6>
+                                <p class="card-text">Obtén ayuda rápida y gratuita de nuestros asistentes amigables.</p>
+                                <button type="button" class="btn btn-primary">Contáctanos</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <!-- end profile-content -->
-         </div>
-      </div>
-   </div>
-</div>
+        </div>
+    </div>    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

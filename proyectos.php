@@ -6,24 +6,20 @@ $client = new MongoDB\Client("mongodb://localhost:27017");
 $collectionProyectos = $client->Quantum->proyectos;
 $collectionUsuariosProyectos = $client->Quantum->usuarios_proyectos;
 
-// Verificar si el usuario está logueado
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirigir al login si no está autenticado
+    header("Location: login.php");
     exit();
 }
 
 $userId = $_SESSION['user_id'];
 $userObjectId = new MongoDB\BSON\ObjectId($userId);
 
-// Obtener la consulta de búsqueda si existe
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Buscar proyectos asociados al usuario
 $proyectosUsuarioCursor = $collectionUsuariosProyectos->find([
     'id_user' => $userObjectId
 ]);
 
-// Obtener todos los IDs de proyectos asociados al usuario
 $proyectoIds = [];
 foreach ($proyectosUsuarioCursor as $proyectoUsuario) {
     $proyectoIds[] = new MongoDB\BSON\ObjectId($proyectoUsuario['id_proyecto']);
@@ -73,45 +69,73 @@ if (isset($_POST['eliminar'])) {
     <?php include 'header.php'; ?>
 </head>
 <body>
-    <div class="container">
-        <h3 class="mt-4">Mis Proyectos</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Título</th>
-                    <th>Descripción</th>
-                    <th>Etiqueta</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($proyectos)): ?>
-                    <tr>
-                        <td colspan="4">No tienes proyectos asignados.</td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($proyectos as $proyecto): ?>
-                        <tr>
-                            <td><a href="ver_proyecto.php?id=<?php echo $proyecto['_id']; ?>"><?php echo htmlspecialchars($proyecto['titulo']); ?></a></td>
-                            <td><?php echo htmlspecialchars($proyecto['descripcion']); ?></td>
-                            <td><?php echo htmlspecialchars($proyecto['etiqueta']); ?></td>
-                            <td>
-                                <?php if ((string)$proyecto['responsable'] === (string)$userObjectId): ?>
-                                    <form action="proyectos.php" method="POST" style="display:inline;">
-                                        <input type="hidden" name="proyecto_id" value="<?php echo $proyecto['_id']; ?>" />
-                                        <button type="submit" name="eliminar" class="btn btn-danger btn-sm">Eliminar</button>
-                                    </form>
-                                <?php else: ?>
-                                    <span class="text-muted">No puedes eliminar este proyecto</span>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-        <a href="new_project.php" class="btn btn-primary">Crear Nuevo Proyecto</a>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="main-box clearfix">
+                <div class="table-responsive">
+                    <table class="table user-list">
+                        <thead>
+                            <tr>
+                                <th><span>Project</span></th>
+                                <th><span>Description</span></th>
+                                <th class="text-center"><span>Tag</span></th>
+                                <th class="text-center"><span>Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($proyectos)): ?>
+                                <tr>
+                                    <td colspan="4" class="text-center">No tienes proyectos asignados.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($proyectos as $proyecto): ?>
+                                    <tr>
+                                        <td>
+                                            <a href="ver_proyecto.php?id=<?php echo $proyecto['_id']; ?>" class="user-link">
+                                                <?php echo htmlspecialchars($proyecto['titulo']); ?>
+                                            </a>
+                                            <span class="user-subhead">Responsable: <?php echo htmlspecialchars($proyecto['responsable']); ?></span>
+                                        </td>
+                                        <td>
+                                            <?php echo htmlspecialchars($proyecto['descripcion']); ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="label label-info"><?php echo htmlspecialchars($proyecto['etiqueta']); ?></span>
+                                        </td>
+                                        <td class="text-center" style="width: 20%;">
+                                            <?php if ((string)$proyecto['responsable'] === (string)$userObjectId): ?>
+                                                <a href="editar_proyecto.php?id=<?php echo $proyecto['_id']; ?>" class="table-link">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-square fa-stack-2x"></i>
+                                                        <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                    </span>
+                                                </a>
+                                                <form action="proyectos.php" method="POST" style="display:inline;">
+                                                    <input type="hidden" name="proyecto_id" value="<?php echo $proyecto['_id']; ?>" />
+                                                    <button type="submit" name="eliminar" class="table-link danger" style="border: none; background: none;">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </button>
+                                                </form>
+                                            <?php else: ?>
+                                                <span class="text-muted">No puedes eliminar este proyecto</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                    <a href="new_project.php" class="btn btn-primary">Crear Nuevo Proyecto</a>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

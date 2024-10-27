@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Registro</title>
     <?php include 'header.php'; ?>
@@ -46,20 +46,16 @@
                             'ci' => $ci,
                             'profesion' => $profesion,
                             'email' => $email,
-                            'password' => password_hash($password, PASSWORD_BCRYPT), // Hashear contraseña
+                            'password' => password_hash($password, PASSWORD_BCRYPT),
                             'fecha_nacimiento' => $fecha_nacimiento
                         ];
-
-                        // Insertar en la colección
                         $insertOneResult = $collection->insertOne($nuevo_usuario);
 
                         if ($insertOneResult->getInsertedCount() == 1) {
-                            // Iniciar sesión
                             $_SESSION['user_id'] = $insertOneResult->getInsertedId();
                             $_SESSION['user_email'] = $email;
 
-                            // Redirigir a la página principal o dashboard
-                            header("Location: index.php"); // Cambia esto a la página que quieras redirigir
+                            header("Location: index.php");
                             exit();
                         } else {
                             $message = "Error al registrar el usuario.";
