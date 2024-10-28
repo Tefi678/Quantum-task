@@ -7,7 +7,7 @@ $collectionProyectos = $client->Quantum->proyectos;
 $collectionUsuariosProyectos = $client->Quantum->usuarios_proyectos;
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirigir al login si no está autenticado
+    header("Location: login.php");
     exit();
 }
 
@@ -15,44 +15,41 @@ $userId = $_SESSION['user_id'];
 $userObjectId = new MongoDB\BSON\ObjectId($userId);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Obtener datos del formulario
     $titulo = $_POST['titulo'] ?? 'Sin título';
     $descripcion = $_POST['descripcion'] ?? 'Sin descripción';
     $etiqueta = $_POST['profesion'] ?? 'Sin etiqueta';
     
-    // Obtener los colaboradores del input oculto
     $colaboradores = json_decode($_POST['colaboradores'] ?? '[]', true);
-    $n_colaboradores = count($colaboradores); // Número de colaboradores
-
-    // Crear el nuevo proyecto
+    $n_colaboradores = is_array($colaboradores) ? count($colaboradores) : 0;
+    
     $nuevoProyecto = [
         'titulo' => $titulo,
         'descripcion' => $descripcion,
         'etiqueta' => $etiqueta,
         'n_tareas' => 0,
-        'n_colaboradores' => $n_colaboradores, // Asigna el número de colaboradores
-        'responsable' => $userObjectId // Almacenar el ObjectId del usuario como responsable
+        'n_colaboradores' => $n_colaboradores,
+        'responsable' => $userObjectId,
+        'fecha_creacion' => date('Y-m-d H:i:s'),
+        'imagen' => 'images/atom.png'
     ];
 
-    // Insertar el nuevo proyecto en la colección
     $resultado = $collectionProyectos->insertOne($nuevoProyecto);
     $proyectoId = $resultado->getInsertedId();
 
-    // Crear el registro en la colección usuarios_proyectos para el encargado
     $collectionUsuariosProyectos->insertOne([
         'id_user' => $userObjectId,
         'id_proyecto' => $proyectoId
     ]);
 
-    // Crear registros en la colección usuarios_proyectos para cada colaborador
-    foreach ($colaboradores as $colaboradorId) {
-        $collectionUsuariosProyectos->insertOne([
-            'id_user' => new MongoDB\BSON\ObjectId($colaboradorId),
-            'id_proyecto' => $proyectoId
-        ]);
+    if (!empty($colaboradores)) {
+        foreach ($colaboradores as $colaboradorId) {
+            $collectionUsuariosProyectos->insertOne([
+                'id_user' => new MongoDB\BSON\ObjectId($colaboradorId),
+                'id_proyecto' => $proyectoId
+            ]);
+        }
     }
 
-    // Redirigir a la página de proyectos después de crear el nuevo proyecto
     header("Location: proyectos.php");
     exit();
 }
@@ -68,12 +65,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Registrar nuevo Proyecto</title>
     <?php include 'header.php'; ?>
 </head>
-<body>
+<body class="bg-theme-color-light">
     <div class="container register">
-        <div class="row">
+        <div class="row justify-content-center">
             <div class="col-md-9 register-right">
                 <form action="new_project.php" method="POST">
-                    <h3 class="register-heading">Registrar nuevo Proyecto</h3>
+                    <h3 class="register-heading text-center">Registrar nuevo Proyecto</h3>
                     <div class="row register-form">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -93,6 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <option value="Otro">Otro</option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="buscarColaborador">Buscar Colaborador:</label>
                                 <input type="text" class="form-control" id="buscarColaborador" placeholder="Nombre del colaborador" onkeyup="buscarColaboradores()" />
@@ -105,7 +104,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </div>
                         </div>
                     </div>
-                    <input type="submit" class="btn btn-primary" value="Crear proyecto" />
+                    <div class="row justify-content-center">
+                        <input type="submit" class="btn btn-primary btn-lg" value="Crear proyecto" />
+                    </div>
                 </form>
             </div>
         </div>
