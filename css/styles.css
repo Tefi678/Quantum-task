@@ -10,10 +10,6 @@ body {
     color: #0e4675;
 }
 
-.navbar {
-    background-color: #007bff;
-}
-
 .carousel-item img {
     height: 70vh;
     object-fit: cover;
@@ -36,15 +32,6 @@ body {
     color: #ffffff;
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-}
-
 .about,
 .services,
 .gallery,
@@ -54,6 +41,15 @@ body {
 
 .about {
     background: linear-gradient(to top, #f9d4db, #ff9690);
+    text-align: center;
+}
+
+.about-item {
+    flex: 1;
+    padding: 20px;
+    margin: 10px;
+    background-color: #4c81ac;
+    border-radius: 5px;
     text-align: center;
 }
 
@@ -70,6 +66,18 @@ h2 {
     font-size: 2rem;
     text-align: center;
     margin-bottom: 30px;
+}
+
+.services h2 {
+    color: #0e4675;
+}
+
+.services h3 {
+    color: #0e4675;
+}
+
+.services p {
+    color: #0e4675;
 }
 
 .service-list {

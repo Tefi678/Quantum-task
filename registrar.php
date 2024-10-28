@@ -20,12 +20,14 @@
             <div class="col-md-9 register-right">
                 <?php
                 require 'vendor/autoload.php';
-                session_start();
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
 
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $client = new MongoDB\Client("mongodb://localhost:27017");
                     $collection = $client->Quantum->usuarios;
-
+                
                     $nombre = $_POST['nombre'];
                     $apellido = $_POST['apellido'];
                     $edad = (int)$_POST['edad'];
@@ -34,10 +36,13 @@
                     $email = $_POST['email'];
                     $password = $_POST['password'];
                     $fecha_nacimiento = $_POST['fecha_nacimiento'];
-
+                    $amigos = 0;
+                    $foto = 'images/user.png';
+                    $bio = '';
+                
                     $message = "";
                     $alert_class = "";
-
+                
                     if ($nombre && $apellido && $edad && $ci && $profesion && $email && $password && $fecha_nacimiento) {
                         $nuevo_usuario = [
                             'nombre' => $nombre,
@@ -47,14 +52,17 @@
                             'profesion' => $profesion,
                             'email' => $email,
                             'password' => password_hash($password, PASSWORD_BCRYPT),
-                            'fecha_nacimiento' => $fecha_nacimiento
+                            'fecha_nacimiento' => $fecha_nacimiento,
+                            'amigos' => $amigos,
+                            'foto' => $foto,
+                            'bio' => $bio
                         ];
                         $insertOneResult = $collection->insertOne($nuevo_usuario);
-
+                
                         if ($insertOneResult->getInsertedCount() == 1) {
                             $_SESSION['user_id'] = $insertOneResult->getInsertedId();
                             $_SESSION['user_email'] = $email;
-
+                
                             header("Location: index.php");
                             exit();
                         } else {

@@ -1,3 +1,19 @@
+<?php
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require 'vendor/autoload.php';
+$client = new MongoDB\Client("mongodb://localhost:27017");
+$collection = $client->Quantum->usuarios;
+
+$userData = null;
+if (isset($_SESSION['user_id'])) {
+    $userData = $collection->findOne(['_id' => new MongoDB\BSON\ObjectId($_SESSION['user_id'])]);
+}
+?>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="index.php">
         <img src="./images/atom.png" width="30" height="30" class="d-inline-block align-top" alt="">
@@ -15,13 +31,19 @@
             <li class="nav-item">
                 <a class="nav-link" href="historial.php">Notificaciones</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="help.php">Ayuda</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="friends.php">Amigos (<?php echo $userData ? htmlspecialchars($userData['amigos']) : 0; ?>)</a>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img src="./images/user.png" alt="Cuenta" style="width: 30px; height: 30px; border-radius: 50%;">
+                    <img src="<?php echo $userData ? htmlspecialchars($userData['foto']) : './images/user.png'; ?>" alt="Cuenta" style="width: 30px; height: 30px; border-radius: 50%;">
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <?php if (isset($_SESSION['username'])): ?>
-                        <a class="dropdown-item" href="perfil.php"><?php echo htmlspecialchars($_SESSION['username']); ?></a>
+                    <?php if ($userData): ?>
+                        <a class="dropdown-item" href="perfil.php"><?php echo htmlspecialchars($userData['nombre'] . ' ' . $userData['apellido']); ?></a>
                         <a class="dropdown-item" href="cerrar_sesion.php">Cerrar Sesión</a>
                     <?php else: ?>
                         <a class="dropdown-item" href="registrar.php">Registrarse</a>
@@ -32,7 +54,7 @@
         </ul>
         <form class="form-inline my-2 my-lg-0" method="GET" action="proyectos.php">
             <input class="form-control mr-sm-2" type="search" name="search" placeholder="Buscar por título" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+            <button class="btn btn-outline-light" type="submit">Buscar</button>
         </form>
     </div>
 </nav>

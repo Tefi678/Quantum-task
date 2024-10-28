@@ -71,8 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         </div>
                                         <div class="text-center pt-1 mb-5 pb-1">
                                             <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-                                            <p class="mb-0 me-2"></p>
-                                            <a class="text-muted" href="#!">¿Olvidaste tu contraseña?</a>
                                         </div>
                                         <div class="d-flex align-items-center justify-content-center pb-4">
                                             <p class="mb-0 me-2">¿No tienes cuenta?</p>
