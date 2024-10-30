@@ -3,8 +3,10 @@ session_start();
 require 'vendor/autoload.php';
 
 $client = new MongoDB\Client("mongodb://localhost:27017");
-$collectionProyectos = $client->Quantum->proyectos;
-$collectionUsuariosProyectos = $client->Quantum->usuarios_proyectos;
+$database = $client->Quantum;
+$collectionProyectos = $database->proyectos;
+$collectionUsuariosProyectos = $database->usuarios_proyectos;
+$notificacionesCollection = $database->notificaciones;
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -14,21 +16,30 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $userObjectId = new MongoDB\BSON\ObjectId($userId);
 
+// Function to register activity
+function registrarActividad($user_id, $descripcion, $tipo) {
+    global $notificacionesCollection;
+    $actividad = [
+        'user_id' => $user_id,
+        'descripcion' => $descripcion,
+        'fecha' => new MongoDB\BSON\UTCDateTime(),
+        'tipo' => $tipo,
+    ];
+    $notificacionesCollection->insertOne($actividad);
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $titulo = $_POST['titulo'] ?? 'Sin título';
     $descripcion = $_POST['descripcion'] ?? 'Sin descripción';
     $etiqueta = $_POST['profesion'] ?? 'Sin etiqueta';
     
-    // Validar y decodificar la entrada 'colaboradores'
     $colaboradoresJson = $_POST['colaboradores'] ?? '[]';
     $colaboradores = json_decode($colaboradoresJson, true);
 
-    // Comprobar si el resultado decodificado es un array
     if (!is_array($colaboradores)) {
-        $colaboradores = []; // Volver a un array vacío
+        $colaboradores = [];
     }
 
-    // Convertir los IDs de usuario a ObjectId
     $colaboradoresObjectIds = array_map(function($id) {
         return new MongoDB\BSON\ObjectId($id);
     }, $colaboradores);
@@ -61,6 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'id_proyecto' => $proyectoId
         ]);
     }
+
+    registrarActividad($userId, 'Has creado el proyecto "' . $titulo . '"', 'Creación de proyecto');
 
     header("Location: proyectos.php");
     exit();

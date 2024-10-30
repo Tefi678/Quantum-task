@@ -4,6 +4,7 @@ require 'vendor/autoload.php';
 
 $client = new MongoDB\Client("mongodb://localhost:27017");
 $collectionUsuarios = $client->Quantum->usuarios;
+$notificacionesCollection = $client->Quantum->notificaciones;
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -12,8 +13,20 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = new MongoDB\BSON\ObjectId($_SESSION['user_id']);
 
-function buscarUsuarios($nombre)
-{
+function registrarActividad($user_id, $descripcion, $tipo) {
+    global $notificacionesCollection;
+    $actividad = [
+        'user_id' => $user_id,
+        'descripcion' => $descripcion,
+        'fecha' => new MongoDB\BSON\UTCDateTime(),
+        'tipo' => $tipo,
+    ];
+    $notificacionesCollection->insertOne($actividad);
+}
+
+$notificaciones = $notificacionesCollection->find(['user_id' => $userId], ['sort' => ['fecha' => -1]]);
+
+function buscarUsuarios($nombre) {
     global $collectionUsuarios;
 
     $resultados = $collectionUsuarios->find([
@@ -31,8 +44,9 @@ function buscarUsuarios($nombre)
 
 if (isset($_POST['add_friend'])) {
     $amigoId = new MongoDB\BSON\ObjectId($_POST['friend_id']);
-    $usuario = $collectionUsuarios->findOne(['_id' => $userId]);
+    $amigo = $collectionUsuarios->findOne(['_id' => $amigoId]);
 
+    $usuario = $collectionUsuarios->findOne(['_id' => $userId]);
     $amigos = isset($usuario['friends']) ? iterator_to_array($usuario['friends']) : [];
     
     if (!in_array($amigoId, $amigos)) {
@@ -53,6 +67,8 @@ if (isset($_POST['add_friend'])) {
                 ]
             );
         }
+        // Register activity for adding a friend
+        registrarActividad($userId, 'Agregó a ' . $amigo['nombre'], 'Agregar amigo');
     }
     header("Location: friends.php");
     exit();
@@ -60,6 +76,8 @@ if (isset($_POST['add_friend'])) {
 
 if (isset($_POST['remove_friend'])) {
     $amigoId = new MongoDB\BSON\ObjectId($_POST['friend_id']);
+    $amigo = $collectionUsuarios->findOne(['_id' => $amigoId]);
+
     $usuario = $collectionUsuarios->findOne(['_id' => $userId]);
 
     if (isset($usuario['friends']) && in_array($amigoId, iterator_to_array($usuario['friends']))) {
@@ -70,6 +88,8 @@ if (isset($_POST['remove_friend'])) {
                 '$inc' => ['amigos' => -1]
             ]
         );
+        // Register activity for removing a friend
+        registrarActividad($userId, 'Eliminó a ' . $amigo['nombre'], 'Eliminar amigo');
     }
     header("Location: friends.php");
     exit();
@@ -132,8 +152,8 @@ if (!empty($amigosActuales)) {
         </div>
 
         <div class="row mt-2">
+            <h2 class="mt-4" style="color: white">Resultados de Búsqueda</h2>
             <?php foreach ($usuarios as $usuario): ?>
-                <h2 class="mt-4" style="color: white">Resultados de Búsqueda</h2>
                 <div class="col-md-6 col-xl-4">
                     <div class="card">
                         <div class="card-body p-4 d-flex align-items-center gap-3">

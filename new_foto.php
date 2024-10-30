@@ -3,7 +3,9 @@ session_start();
 require 'vendor/autoload.php';
 
 $client = new MongoDB\Client("mongodb://localhost:27017");
-$collectionUsuarios = $client->Quantum->usuarios;
+$database = $client->Quantum;
+$collectionUsuarios = $database->usuarios;
+$notificacionesCollection = $database->notificaciones;
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -12,6 +14,17 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = $_SESSION['user_id'];
 $userObjectId = new MongoDB\BSON\ObjectId($userId);
+
+function registrarActividad($user_id, $descripcion, $tipo) {
+    global $notificacionesCollection;
+    $actividad = [
+        'user_id' => $user_id,
+        'descripcion' => $descripcion,
+        'fecha' => new MongoDB\BSON\UTCDateTime(),
+        'tipo' => $tipo,
+    ];
+    $notificacionesCollection->insertOne($actividad);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] == UPLOAD_ERR_OK) {
@@ -24,6 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ['_id' => $userObjectId],
                 ['$set' => ['foto' => $uploadFile]]
             );
+
+            // Register profile photo update activity
+            registrarActividad($userId, 'Foto de perfil actualizada.', 'Actualización de perfil');
+
             header("Location: perfil.php?msg=Foto de perfil actualizada.");
             exit();
         } else {
@@ -36,6 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ['_id' => $userObjectId],
             ['$set' => ['foto' => $fotoExistente]]
         );
+
+        registrarActividad($userId, 'Foto de perfil actualizada.', 'Actualización de perfil');
+
         header("Location: perfil.php?msg=Foto de perfil actualizada.");
         exit();
     } else {

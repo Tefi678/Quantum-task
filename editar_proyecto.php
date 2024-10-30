@@ -3,7 +3,9 @@ session_start();
 require 'vendor/autoload.php';
 
 $client = new MongoDB\Client("mongodb://localhost:27017");
-$collectionProyectos = $client->Quantum->proyectos;
+$database = $client->Quantum;
+$collectionProyectos = $database->proyectos;
+$notificacionesCollection = $database->notificaciones;
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -21,6 +23,18 @@ if (!$proyecto) {
     exit();
 }
 
+// Function to register activity
+function registrarActividad($user_id, $descripcion, $tipo) {
+    global $notificacionesCollection;
+    $actividad = [
+        'user_id' => $user_id,
+        'descripcion' => $descripcion,
+        'fecha' => new MongoDB\BSON\UTCDateTime(),
+        'tipo' => $tipo,
+    ];
+    $notificacionesCollection->insertOne($actividad);
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $titulo = $_POST['titulo'];
     $descripcion = $_POST['descripcion'];
@@ -32,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'etiqueta' => $etiqueta,
     ];
 
-    // Handle image upload
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
         $uploadDir = 'images/';
         $fileName = basename($_FILES['imagen']['name']);
@@ -54,11 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ['$set' => $updateData]
     );
 
+    // Register project update activity
+    registrarActividad($userId, 'Proyecto actualizado: ' . $titulo, 'Actualización de proyecto');
+
     header("Location: proyectos.php?msg=Proyecto actualizado exitosamente.");
     exit();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="es">
