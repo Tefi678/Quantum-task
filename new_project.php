@@ -16,7 +16,6 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $userObjectId = new MongoDB\BSON\ObjectId($userId);
 
-// Function to register activity
 function registrarActividad($user_id, $descripcion, $tipo) {
     global $notificacionesCollection;
     $actividad = [

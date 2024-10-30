@@ -103,7 +103,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['imagenFondo'])) {
                                     </td>
                                     <td><?= htmlspecialchars($tarea['fecha_limite']->toDateTime()->format('Y-m-d')) ?></td>
                                     <td>
-                                        <a href="completar_tarea.php?id=<?= $tarea['_id'] ?>" class="btn btn-success btn-action mr-1" data-toggle="tooltip" title="Completar"><i class="fas fa-wrench"></i></a>
                                         <a href="editar_tarea.php?id=<?= $tarea['_id'] ?>" class="btn btn-primary btn-action mr-1" data-toggle="tooltip" title="Editar"><i class="fas fa-pencil-alt"></i></a>
                                         <a href="eliminar_tarea.php?id=<?= $tarea['_id'] ?>" class="btn btn-danger btn-action" data-toggle="tooltip" title="Eliminar"><i class="fas fa-trash"></i></a>
                                     </td>

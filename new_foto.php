@@ -38,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ['$set' => ['foto' => $uploadFile]]
             );
 
-            // Register profile photo update activity
             registrarActividad($userId, 'Foto de perfil actualizada.', 'Actualización de perfil');
 
             header("Location: perfil.php?msg=Foto de perfil actualizada.");
