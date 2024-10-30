@@ -3,21 +3,28 @@ session_start();
 require 'vendor/autoload.php';
 
 $client = new MongoDB\Client("mongodb://localhost:27017");
+$collectionProyectos = $client->Quantum->proyectos;
 $collectionTareas = $client->Quantum->tareas;
 $collectionUsuarios = $client->Quantum->usuarios;
 
-// Verificar si el usuario está logueado
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-// Obtener el ID del proyecto de la URL
 $projectId = new MongoDB\BSON\ObjectId($_GET['id']);
 
-// Obtener las tareas relacionadas con el proyecto
+$proyecto = $collectionProyectos->findOne(['_id' => $projectId]);
 $tareas = $collectionTareas->find(['proyecto' => $projectId]);
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['imagenFondo'])) {
+    $fileTmp = $_FILES['imagenFondo']['tmp_name'];
+    $fileName = 'images/' . $_FILES['imagenFondo']['name'];
+    move_uploaded_file($fileTmp, $fileName);
+    $imagenFondo = $fileName;
+} else {
+    $imagenFondo = $proyecto['imagen'] ?? 'images/default_background.jpg';
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -28,6 +35,15 @@ $tareas = $collectionTareas->find(['proyecto' => $projectId]);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Ver Tareas del Proyecto</title>
     <?php include 'header.php'; ?>
+    <style>
+        body {
+            background: url('<?= $imagenFondo ?>') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .card {
+            background-color: white;
+        }
+    </style>
 </head>
 <body>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
@@ -36,7 +52,21 @@ $tareas = $collectionTareas->find(['proyecto' => $projectId]);
     <div class="col-md-12 col-12 col-sm-12">
         <div class="card">
             <div class="card-header">
-                <h4>Detalles de las Tareas</h4>
+                <h4><?= htmlspecialchars($proyecto['titulo']) ?></h4>
+                <p><?= htmlspecialchars($proyecto['descripcion']) ?></p>
+                <h5>Colaboradores:</h5>
+                <div class="d-flex">
+                    <?php
+                    if (isset($proyecto['colaboradores'])) {
+                        foreach ($proyecto['colaboradores'] as $colaboradorId) {
+                            $colaborador = $collectionUsuarios->findOne(['_id' => new MongoDB\BSON\ObjectId($colaboradorId)]);
+                            if ($colaborador && isset($colaborador['foto'])) {
+                                echo "<img src='{$colaborador['foto']}' class='rounded-circle mr-2' alt='Colaborador' width='50' height='50' />";
+                            }
+                        }
+                    }
+                    ?>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -55,7 +85,6 @@ $tareas = $collectionTareas->find(['proyecto' => $projectId]);
                                 <tr>
                                     <td class="text-center">
                                         <?php
-                                        // Mostrar fotos de los involucrados
                                         if (isset($tarea['involucrados'])) {
                                             foreach ($tarea['involucrados'] as $involucradoId) {
                                                 $involucrado = $collectionUsuarios->findOne(['_id' => new MongoDB\BSON\ObjectId($involucradoId)]);
@@ -74,8 +103,9 @@ $tareas = $collectionTareas->find(['proyecto' => $projectId]);
                                     </td>
                                     <td><?= htmlspecialchars($tarea['fecha_limite']->toDateTime()->format('Y-m-d')) ?></td>
                                     <td>
+                                        <a href="completar_tarea.php?id=<?= $tarea['_id'] ?>" class="btn btn-success btn-action mr-1" data-toggle="tooltip" title="Completar"><i class="fas fa-wrench"></i></a>
                                         <a href="editar_tarea.php?id=<?= $tarea['_id'] ?>" class="btn btn-primary btn-action mr-1" data-toggle="tooltip" title="Editar"><i class="fas fa-pencil-alt"></i></a>
-                                        <a href="eliminar_tarea.php?id=<?= $tarea['_id'] ?>" class="btn btn-danger btn-action" data-toggle="tooltip" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar esta tarea? Esta acción no se puede deshacer.');"><i class="fas fa-trash"></i></a>
+                                        <a href="eliminar_tarea.php?id=<?= $tarea['_id'] ?>" class="btn btn-danger btn-action" data-toggle="tooltip" title="Eliminar"><i class="fas fa-trash"></i></a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

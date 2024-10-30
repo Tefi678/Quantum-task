@@ -30,7 +30,7 @@ if (!$usuario) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style3.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Perfil de usuario</title>
     <?php include 'header.php'; ?>
@@ -213,7 +213,18 @@ if (!$usuario) {
                             <div class="card-body">
                                 <h6 class="card-title font-weight-bold">Historial</h6>
                                 <p class="card-text">Monitorea los cambios que haz realizado y revisa como se han movido los proyectos en los que trabajas</p>
-                                <button type="button" class="btn btn-primary">Ver historial</button>
+                                <button type="button" class="btn btn-primary" onclick="window.location.href='historial.php'">Ver historial</button>
+                            </div>
+                        </div>
+                        <div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title font-weight-bold">¿Quieres eliminar tu cuenta?</h6>
+                                <p class="card-text">Una vez lo hagas, dejaras de estar involucrado en los proyectos y no podras acceder a tu cuenta mas</p>
+                                <form action="eliminar_cuenta.php" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.');">
+                                    <button type="submit" class="btn btn-danger">Eliminar Cuenta</button>
+                                </form>
                             </div>
                         </div>
                     </div>

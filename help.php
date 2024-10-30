@@ -5,22 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style8.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Perfil de Usuario</title>
+    <title>Ayuda</title>
     <style>
         .text-thin {
-            font-size: 1.5em; /* Aumentar tamaño de letra */
-            color: #003366; /* Azul oscuro */
-            font-weight: bold; /* Negritas */
+            font-size: 1.5em;
+            color: #003366;
+            font-weight: bold;
         }
         .curiosidades {
-            font-size: 1.2em; /* Aumentar tamaño de letra */
-            color: #003366; /* Azul oscuro */
+            font-size: 1.2em;
+            color: #003366;
             margin-top: 10px;
-            font-weight: bold; /* Negritas */
+            font-weight: bold;
         }
         .btn-custom {
-            font-size: 1.2em; /* Aumentar tamaño de botón */
-            margin-top: 10px; /* Espaciado superior */
+            font-size: 1.2em;
+            margin-top: 10px;
         }
     </style>
     <?php include 'header.php'; ?>

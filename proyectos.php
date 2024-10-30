@@ -37,6 +37,25 @@ if (!empty($proyectoIds)) {
     $proyectos = iterator_to_array($cursor);
 }
 
+$limit = 9;
+$currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$skip = ($currentPage - 1) * $limit;
+
+$totalProjects = $collectionProyectos->countDocuments([
+    '_id' => ['$in' => $proyectoIds],
+    'titulo' => new MongoDB\BSON\Regex($searchQuery, 'i')
+]);
+
+$totalPages = ceil($totalProjects / $limit);
+
+$filter = ['_id' => ['$in' => $proyectoIds]];
+if ($searchQuery) {
+    $filter['titulo'] = new MongoDB\BSON\Regex($searchQuery, 'i');
+}
+$cursor = $collectionProyectos->find($filter, ['skip' => $skip, 'limit' => $limit]);
+
+$proyectos = iterator_to_array($cursor);
+
 if (isset($_POST['eliminar'])) {
     $proyectoId = new MongoDB\BSON\ObjectId($_POST['proyecto_id']);
     $infoProyecto = $collectionProyectos->findOne(['_id' => $proyectoId]);
@@ -55,7 +74,7 @@ if (isset($_POST['eliminar'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style4.css">
+    <link rel="stylesheet" href="css/style3.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Mis Proyectos</title>
     <?php include 'header.php'; ?>
@@ -64,8 +83,11 @@ if (isset($_POST['eliminar'])) {
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 <div class="container mt-4">
     <div class="row">
-        <h1 style= "color: #ffffff">    Proyectos en los que trabajas   <a href="new_project.php" class="btn btn-outline-light btn-lg">Crear Nuevo Proyecto</a></h1>
-        <h1></h1>
+    <h1 style="color: #ffffff; text-align: center; margin: 20px 0;">
+        Proyectos en los que trabajas 
+        <a href="new_project.php" class="btn btn-outline-light btn-lg" style="margin-left: 15px;">Crear Nuevo Proyecto</a>
+    </h1>
+    <h1></h1>
     </div>
     <div class="row">
         <?php if (empty($proyectos)): ?>
@@ -116,6 +138,27 @@ if (isset($_POST['eliminar'])) {
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+    <?php if ($totalPages > 1): ?>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <?php if ($currentPage == 1) echo 'disabled'; ?>">
+                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?php if ($currentPage == $i) echo 'active'; ?>">
+                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    <li class="page-item <?php if ($currentPage == $totalPages) echo 'disabled'; ?>">
+                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        <?php endif; ?>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

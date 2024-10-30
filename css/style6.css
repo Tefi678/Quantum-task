@@ -56,10 +56,10 @@ h1 {
 .task-list th, .task-list td {
     padding: 10px;
     text-align: left;
-    max-width: 150px; /* Limitar el ancho de las celdas */
-    overflow: hidden; /* Ocultar el desbordamiento */
-    text-overflow: ellipsis; /* Mostrar "..." para indicar que hay más texto */
-    white-space: nowrap; /* Evitar el salto de línea */
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .task-list th {
     background-color: #f4f4f4;
@@ -78,15 +78,15 @@ h1 {
     padding: 5px;
     position: absolute;
     z-index: 1;
-    bottom: 125%; /* Colocar arriba de la celda */
+    bottom: 125%;
     left: 50%;
-    margin-left: -100px; /* Centrar el tooltip */
-    opacity: 0; /* Ocultar el tooltip */
-    transition: opacity 0.3s; /* Transición suave */
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 .task-list td:hover .tooltip {
-    visibility: visible; /* Mostrar el tooltip al pasar el mouse */
-    opacity: 1; /* Hacer visible el tooltip */
+    visibility: visible;
+    opacity: 1;
 }
 .buttons {
     text-align: right;

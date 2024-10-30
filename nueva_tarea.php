@@ -6,36 +6,42 @@ $client = new MongoDB\Client("mongodb://localhost:27017");
 $collectionProyectos = $client->Quantum->proyectos;
 $collectionTareas = $client->Quantum->tareas;
 $collectionUsuarios = $client->Quantum->usuarios;
+$collectionUsuariosProyectos = $client->Quantum->usuarios_proyectos;
 
-// Verificar si el usuario está logueado
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-// Obtener el ID del proyecto de la URL
 $projectId = new MongoDB\BSON\ObjectId($_GET['id']);
 
-// Verificar si el proyecto existe y si el usuario es responsable o colaborador
-$proyecto = $collectionProyectos->findOne(['_id' => $projectId, '$or' => [
-    ['responsable' => new MongoDB\BSON\ObjectId($_SESSION['user_id'])],
-    ['colaboradores' => new MongoDB\BSON\ObjectId($_SESSION['user_id'])]
-]]);
+$proyecto = $collectionProyectos->findOne([
+    '_id' => $projectId,
+    '$or' => [
+        ['responsable' => new MongoDB\BSON\ObjectId($_SESSION['user_id'])],
+        ['colaboradores' => new MongoDB\BSON\ObjectId($_SESSION['user_id'])]
+    ]
+]);
+
 if (!$proyecto) {
     echo "No tienes permiso para agregar tareas a este proyecto.";
     exit();
 }
 
-// Obtener la lista de usuarios disponibles en el proyecto (responsable y colaboradores)
+$idsColaboradoresProyecto = $collectionUsuariosProyectos->find(
+    ['id_proyecto' => $projectId],
+    ['projection' => ['id_user' => 1]]
+)->toArray();
+
+$idsColaboradores = array_map(function($doc) {
+    return $doc['id_user'];
+}, $idsColaboradoresProyecto);
+
 $usuariosProyecto = $collectionUsuarios->find([
-    '_id' => ['$in' => array_merge(
-        [$proyecto['responsable']],
-        $proyecto['colaboradores'] ?? []
-    )]
+    '_id' => ['$in' => $idsColaboradores]
 ]);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Recoger datos del formulario
     $nombre = $_POST['nombre'];
     $descripcion = $_POST['descripcion'];
     $progreso = (int) $_POST['progreso'];
@@ -44,14 +50,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         return new MongoDB\BSON\ObjectId($id);
     }, $_POST['involucrados']);
 
-    // Crear nueva tarea en la base de datos
     $collectionTareas->insertOne([
         'nombre' => $nombre,
         'descripcion' => $descripcion,
         'progreso' => $progreso,
         'fecha_limite' => $fechaLimite,
         'proyecto' => $projectId,
-        'involucrados' => $involucrados
+        'involucrados' => $involucrados,
+        'estado' => 'no completado'
     ]);
 
     header("Location: ver_proyecto.php?id={$projectId}&msg=Tarea creada exitosamente.");

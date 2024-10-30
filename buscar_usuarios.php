@@ -7,21 +7,20 @@ $collectionUsuarios = $client->Quantum->usuarios;
 $nombre = isset($_GET['nombre']) ? trim($_GET['nombre']) : '';
 
 if ($nombre) {
-    // Buscar usuarios cuyo nombre coincida con el criterio
     $resultados = $collectionUsuarios->find([
-        'nombre' => new MongoDB\BSON\Regex($nombre, 'i') // Búsqueda insensible a mayúsculas/minúsculas
+        'nombre' => new MongoDB\BSON\Regex($nombre, 'i')
     ])->toArray();
 
-    // Transformar resultados a un formato limpio
     $usuarios = [];
     foreach ($resultados as $usuario) {
         $usuarios[] = [
             '_id' => (string) $usuario['_id'],
-            'nombre' => $usuario['nombre']
+            'nombre' => $usuario['nombre'],
+            'foto' => $usuario['foto']
         ];
     }
 
-    // Enviar los resultados como JSON
     header('Content-Type: application/json');
     echo json_encode($usuarios);
 }
+?>

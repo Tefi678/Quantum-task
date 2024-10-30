@@ -1,3 +1,98 @@
+<?php
+session_start();
+require 'vendor/autoload.php';
+
+$client = new MongoDB\Client("mongodb://localhost:27017");
+$collectionUsuarios = $client->Quantum->usuarios;
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$userId = new MongoDB\BSON\ObjectId($_SESSION['user_id']);
+
+function buscarUsuarios($nombre)
+{
+    global $collectionUsuarios;
+
+    $resultados = $collectionUsuarios->find([
+        'nombre' => new MongoDB\BSON\Regex($nombre, 'i')
+    ])->toArray();
+
+    return array_map(function ($usuario) {
+        return [
+            '_id' => (string) $usuario['_id'],
+            'nombre' => $usuario['nombre'],
+            'foto' => $usuario['foto']
+        ];
+    }, $resultados);
+}
+
+if (isset($_POST['add_friend'])) {
+    $amigoId = new MongoDB\BSON\ObjectId($_POST['friend_id']);
+    $usuario = $collectionUsuarios->findOne(['_id' => $userId]);
+
+    $amigos = isset($usuario['friends']) ? iterator_to_array($usuario['friends']) : [];
+    
+    if (!in_array($amigoId, $amigos)) {
+        if (empty($amigos)) {
+            $collectionUsuarios->updateOne(
+                ['_id' => $userId],
+                [
+                    '$set' => ['friends' => [$amigoId]],
+                    '$inc' => ['amigos' => 1]
+                ]
+            );
+        } else {
+            $collectionUsuarios->updateOne(
+                ['_id' => $userId],
+                [
+                    '$addToSet' => ['friends' => $amigoId],
+                    '$inc' => ['amigos' => 1]
+                ]
+            );
+        }
+    }
+    header("Location: friends.php");
+    exit();
+}
+
+if (isset($_POST['remove_friend'])) {
+    $amigoId = new MongoDB\BSON\ObjectId($_POST['friend_id']);
+    $usuario = $collectionUsuarios->findOne(['_id' => $userId]);
+
+    if (isset($usuario['friends']) && in_array($amigoId, iterator_to_array($usuario['friends']))) {
+        $collectionUsuarios->updateOne(
+            ['_id' => $userId],
+            [
+                '$pull' => ['friends' => $amigoId],
+                '$inc' => ['amigos' => -1]
+            ]
+        );
+    }
+    header("Location: friends.php");
+    exit();
+}
+
+$usuarioActual = $collectionUsuarios->findOne(['_id' => $userId]);
+$amigosActuales = isset($usuarioActual['friends']) ? iterator_to_array($usuarioActual['friends']) : [];
+
+$usuarios = [];
+if (isset($_GET['nombre'])) {
+    $nombre = trim($_GET['nombre']);
+    $usuarios = buscarUsuarios($nombre);
+}
+
+$detallesAmigos = [];
+if (!empty($amigosActuales)) {
+    $detallesAmigos = $collectionUsuarios->find([
+        '_id' => ['$in' => $amigosActuales]
+    ])->toArray();
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,52 +100,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style9.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Gestor de Proyectos</title>
+    <title>Gestor de Amigos</title>
     <?php include 'header.php'; ?>
 </head>
 <body>
-<div class="container">
-  <div class="py-6">
-    <div class="row">
-      <div class="col-lg-4 col-12">
-        <div class="card mb-5 rounded-3">
-          <div>
-            <img src="images/atom.png" alt="Image" class="img-fluid rounded-top">
-          </div>
-          <div class="avatar avatar-xl mt-n7 ms-4">
-            <img src="images/user.png" alt="Image" class="rounded-circle border-4
-              border-white-color-40">
-          </div>
-          <div class="card-body">
-            <h4 class="mb-1">Titulo</h4>
-            <p>descripcion</p>
-            <p>Creado por: responsable</p>
-            <p>N° de Colaboradores: n_colaboradores</p>
-            <p>Crado el: fecha_creacion</p>
-            <span class="badge badge-secondary">etiqueta</span>
-            <div>
-              <div class="d-flex justify-content-between
-                align-items-center">
-                <a href="#!" class="btn btn-outline-primary">Ir a proyecto</a>
-                <div class="dropdown dropstart">
-                  <a href="#!" class="btn btn-ghost btn-icon btn-sm rounded-circle" id="dropdownMenuOne" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical icon-xs"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                  </a>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuOne">
-                  <a class="dropdown-item d-flex align-items-center" href="#!"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-slash me-2 icon-xxs dropdown-item-icon"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>Editar</a>
-                    <a class="dropdown-item d-flex align-items-center" href="#!"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-slash me-2 icon-xxs dropdown-item-icon"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>Eliminar</a>
-                  </div>
+    <div class="container">
+        <h2 style="color: white">Buscar Amigos</h2>
+        <form method="GET" action="">
+            <input type="text" name="nombre" placeholder="Buscar por nombre" required>
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+
+        <h2 class="mt-4" style="color: white">Tus Amigos</h2>
+        <div class="row mt-2">
+            <?php foreach ($detallesAmigos as $amigo): ?>
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body p-4 d-flex align-items-center gap-3">
+                            <img src="<?= htmlspecialchars($amigo['foto']) ?>" alt="" class="rounded-circle" width="40" height="40">
+                            <div>
+                                <h5 class="fw-semibold mb-0"><?= htmlspecialchars($amigo['nombre']) ?></h5>
+                                <form method="POST" action="">
+                                    <input type="hidden" name="friend_id" value="<?= $amigo['_id'] ?>">
+                                    <button type="submit" name="remove_friend" class="btn btn-danger">Eliminar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </div>
+            <?php endforeach; ?>
         </div>
-      </div>
+
+        <div class="row mt-2">
+            <?php foreach ($usuarios as $usuario): ?>
+                <h2 class="mt-4" style="color: white">Resultados de Búsqueda</h2>
+                <div class="col-md-6 col-xl-4">
+                    <div class="card">
+                        <div class="card-body p-4 d-flex align-items-center gap-3">
+                            <img src="<?= htmlspecialchars($usuario['foto']) ?>" alt="" class="rounded-circle" width="40" height="40">
+                            <div>
+                                <h5 class="fw-semibold mb-0"><?= htmlspecialchars($usuario['nombre']) ?></h5>
+                                <form method="POST" action="">
+                                    <input type="hidden" name="friend_id" value="<?= $usuario['_id'] ?>">
+                                    <button type="submit" name="add_friend" class="btn btn-success">Agregar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </div>
-  </div>
-</div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.2.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 <footer>

@@ -5,7 +5,6 @@ require 'vendor/autoload.php';
 $client = new MongoDB\Client("mongodb://localhost:27017");
 $collectionProyectos = $client->Quantum->proyectos;
 
-// Verificar si el usuario está logueado
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
@@ -14,7 +13,6 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $userObjectId = new MongoDB\BSON\ObjectId($userId);
 
-// Obtener el proyecto seleccionado
 $projectId = new MongoDB\BSON\ObjectId($_GET['id']);
 $proyecto = $collectionProyectos->findOne(['_id' => $projectId, 'responsable' => $userObjectId]);
 
@@ -24,25 +22,43 @@ if (!$proyecto) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Recoger datos del formulario
     $titulo = $_POST['titulo'];
     $descripcion = $_POST['descripcion'];
     $etiqueta = $_POST['etiqueta'];
+    
+    $updateData = [
+        'titulo' => $titulo,
+        'descripcion' => $descripcion,
+        'etiqueta' => $etiqueta,
+    ];
 
-    // Actualizar en la base de datos
+    // Handle image upload
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
+        $uploadDir = 'images/';
+        $fileName = basename($_FILES['imagen']['name']);
+        $uploadFile = $uploadDir . $fileName;
+
+        if (move_uploaded_file($_FILES['imagen']['tmp_name'], $uploadFile)) {
+            $updateData['imagen'] = $uploadFile;
+        } else {
+            header("Location: proyectos.php?msg=Error al subir la imagen.");
+            exit();
+        }
+    } elseif (isset($_POST['imagen_existente']) && !empty($_POST['imagen_existente'])) {
+        $imagenExistente = htmlspecialchars($_POST['imagen_existente']);
+        $updateData['imagen'] = $imagenExistente;
+    }
+
     $collectionProyectos->updateOne(
         ['_id' => $projectId],
-        ['$set' => [
-            'titulo' => $titulo,
-            'descripcion' => $descripcion,
-            'etiqueta' => $etiqueta,
-        ]]
+        ['$set' => $updateData]
     );
 
     header("Location: proyectos.php?msg=Proyecto actualizado exitosamente.");
     exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -85,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container">
         <div class="form-container">
             <h2 class="text-center">Editar Proyecto</h2>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="titulo">Título</label>
                     <input type="text" class="form-control" id="titulo" name="titulo" value="<?= htmlspecialchars($proyecto['titulo']) ?>" required>
@@ -97,6 +113,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="form-group">
                     <label for="etiqueta">Etiqueta</label>
                     <input type="text" class="form-control" id="etiqueta" name="etiqueta" value="<?= htmlspecialchars($proyecto['etiqueta']) ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="imagen">Sube una nueva imagen:</label>
+                    <input type="file" class="form-control-file" name="imagen" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Selecciona una imagen existente:</label>
+                    <select class="form-control" name="imagen_existente">
+                        <option value="">-- Selecciona una imagen --</option>
+                        <?php
+                        $images = glob("images/*.{jpg,jpeg,png,gif}", GLOB_BRACE);
+                        foreach ($images as $image) {
+                            $imageName = basename($image);
+                            echo "<option value='$image'>$imageName</option>";
+                        }
+                        ?>
+                    </select>
                 </div>
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary btn-lg">Guardar Cambios</button>

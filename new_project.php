@@ -19,8 +19,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $descripcion = $_POST['descripcion'] ?? 'Sin descripción';
     $etiqueta = $_POST['profesion'] ?? 'Sin etiqueta';
     
-    $colaboradores = json_decode($_POST['colaboradores'] ?? '[]', true);
-    $n_colaboradores = is_array($colaboradores) ? count($colaboradores) : 0;
+    // Validar y decodificar la entrada 'colaboradores'
+    $colaboradoresJson = $_POST['colaboradores'] ?? '[]';
+    $colaboradores = json_decode($colaboradoresJson, true);
+
+    // Comprobar si el resultado decodificado es un array
+    if (!is_array($colaboradores)) {
+        $colaboradores = []; // Volver a un array vacío
+    }
+
+    // Convertir los IDs de usuario a ObjectId
+    $colaboradoresObjectIds = array_map(function($id) {
+        return new MongoDB\BSON\ObjectId($id);
+    }, $colaboradores);
+
+    $n_colaboradores = count($colaboradoresObjectIds);
     
     $nuevoProyecto = [
         'titulo' => $titulo,
@@ -29,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'n_tareas' => 0,
         'n_colaboradores' => $n_colaboradores,
         'responsable' => $userObjectId,
+        'colaboradores' => $colaboradoresObjectIds,
         'fecha_creacion' => date('Y-m-d H:i:s'),
         'imagen' => 'images/atom.png'
     ];
@@ -41,13 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'id_proyecto' => $proyectoId
     ]);
 
-    if (!empty($colaboradores)) {
-        foreach ($colaboradores as $colaboradorId) {
-            $collectionUsuariosProyectos->insertOne([
-                'id_user' => new MongoDB\BSON\ObjectId($colaboradorId),
-                'id_proyecto' => $proyectoId
-            ]);
-        }
+    foreach ($colaboradoresObjectIds as $colaboradorObjectId) {
+        $collectionUsuariosProyectos->insertOne([
+            'id_user' => $colaboradorObjectId,
+            'id_proyecto' => $proyectoId
+        ]);
     }
 
     header("Location: proyectos.php");
